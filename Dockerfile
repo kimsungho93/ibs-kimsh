@@ -22,8 +22,8 @@ WORKDIR /app
 # Copy jar from build stage
 COPY --from=build /app/build/libs/app.jar app.jar
 
-# Expose port
+# Expose port (Railway will override with $PORT)
 EXPOSE 8080
 
-# Run application
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# Run application with Railway PORT support
+CMD ["sh", "-c", "java -Dserver.port=${PORT:-8080} -jar app.jar"]
