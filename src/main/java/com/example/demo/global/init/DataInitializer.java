@@ -38,7 +38,7 @@ public class DataInitializer implements CommandLineRunner {
                 {"이정규", "jglee@ibslab.com", "jglee1234", User.Role.USER},
                 {"허소영", "syheo@ibslab.com", "syheo1234", User.Role.USER},
                 {"김예린", "yrkim@ibslab.com", "yrkim1234", User.Role.USER},
-                {"김성호", "kimsh@ibslab.com", "thslr931!@#", User.Role.ADMIN},
+                {"김성호", "kimsh@ibslab.com", "dlekdud3", User.Role.ADMIN},
                 {"길기호", "ghgil@ibslab.com", "ghgil1234", User.Role.USER},
                 {"이다혜", "leedh@ibslab.com", "leedh1234", User.Role.USER},
                 {"김현진", "kimhj@ibslab.com", "kimhj1234", User.Role.USER},
