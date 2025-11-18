@@ -1,8 +1,14 @@
 [phases.setup]
-nixPkgs = ['jdk21', 'gradle']
+nixPkgs = ['temurin-bin-21']
+
+[phases.install]
+cmds = ['./gradlew --version']
 
 [phases.build]
-cmds = ['gradle build -x test']
+cmds = ['./gradlew build -x test --no-daemon']
 
 [phases.start]
-cmd = 'java -jar build/libs/*.jar'
+cmd = 'java -Dserver.port=$PORT -jar build/libs/*.jar'
+
+[variables]
+GRADLE_OPTS = '-Dorg.gradle.daemon=false'
