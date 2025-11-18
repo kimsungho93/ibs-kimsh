@@ -5,10 +5,10 @@ nixPkgs = ['temurin-bin-21']
 cmds = ['./gradlew --version']
 
 [phases.build]
-cmds = ['./gradlew build -x test --no-daemon']
+cmds = ['./gradlew clean bootJar -x test --no-daemon']
 
 [phases.start]
-cmd = 'java -Dserver.port=$PORT -jar build/libs/*.jar'
+cmd = 'java -Dserver.port=$PORT -jar build/libs/app.jar'
 
 [variables]
 GRADLE_OPTS = '-Dorg.gradle.daemon=false'
