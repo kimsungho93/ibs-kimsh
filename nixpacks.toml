@@ -1,0 +1,8 @@
+[phases.setup]
+nixPkgs = ['jdk21', 'gradle']
+
+[phases.build]
+cmds = ['gradle build -x test']
+
+[phases.start]
+cmd = 'java -jar build/libs/*.jar'
