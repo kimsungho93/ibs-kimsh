@@ -77,7 +77,7 @@ public class SecurityConfig {
         // 환경 변수에서 CORS 허용 오리진 읽기 (쉼표로 구분하여 여러 개 지원)
         List<String> origins = Arrays.asList(allowedOrigins.split(","));
         configuration.setAllowedOrigins(origins);
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true); // httpOnly 쿠키 전송 허용
         configuration.setMaxAge(3600L); // 1시간

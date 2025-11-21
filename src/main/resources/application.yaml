@@ -2,6 +2,11 @@ spring:
   application:
     name: demo
 
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
   datasource:
     url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${MYSQL_DATABASE:testdb}?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Seoul&useSSL=${MYSQL_USE_SSL:false}&allowPublicKeyRetrieval=true
     username: ${MYSQL_USER:root}
@@ -40,3 +45,11 @@ jwt:
 # CORS 설정
 cors:
   allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173}
+
+# Cloudflare R2 설정
+r2:
+  access-key-id: ${R2_ACCESS_KEY_ID:af901ff8c3874d3c00d33967f2b0c352}
+  secret-access-key: ${R2_SECRET_ACCESS_KEY:3ff066bd2596593989d8f1fcbb62375a17c97817e89f9d0055d251f08d52bc16}
+  endpoint: ${R2_ENDPOINT:https://3dd2ff4d5a87da516ca667ad59cc0627.r2.cloudflarestorage.com}
+  bucket-name: ${R2_BUCKET_NAME:project-bucket}
+  public-url: ${R2_PUBLIC_URL:https://3dd2ff4d5a87da516ca667ad59cc0627.r2.cloudflarestorage.com/project-bucket}
