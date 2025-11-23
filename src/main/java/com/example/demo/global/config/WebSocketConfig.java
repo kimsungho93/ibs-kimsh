@@ -32,7 +32,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/wss/chat")
                 .setAllowedOriginPatterns("*")
-//                .setAllowedOrigins("ws://localhost:5173")
+                .setAllowedOrigins("wss://ibs-kimsh.vercel.app")
                 .withSockJS();
     }
 }
