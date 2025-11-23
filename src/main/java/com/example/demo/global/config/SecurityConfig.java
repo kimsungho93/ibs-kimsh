@@ -52,7 +52,8 @@ public class SecurityConfig {
                         // 인증 없이 접근 가능한 경로
                         .requestMatchers(
                                 "/api/auth/login",
-                                "/api/auth/refresh"
+                                "/api/auth/refresh",
+                                "/wss/**"
                         ).permitAll()
                         // 나머지는 인증 필요
                         .anyRequest().authenticated()
@@ -84,6 +85,7 @@ public class SecurityConfig {
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/api/**", configuration);
+        source.registerCorsConfiguration("/wss/**", configuration);
 
         return source;
     }
