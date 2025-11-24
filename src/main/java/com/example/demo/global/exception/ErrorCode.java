@@ -31,7 +31,16 @@ public enum ErrorCode {
     // 채팅방 관련 에러
     CHAT_ROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "채팅방을 찾을 수 없습니다."),
     CHAT_ROOM_FULL(HttpStatus.BAD_REQUEST, "채팅방이 가득 찼습니다."),
-    CHAT_ROOM_PASSWORD_MISMATCH(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다.");
+    CHAT_ROOM_PASSWORD_MISMATCH(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다."),
+
+    // 게시글 관련 에러
+    POST_NOT_FOUND(HttpStatus.NOT_FOUND, "게시글을 찾을 수 없습니다."),
+    POST_FORBIDDEN(HttpStatus.FORBIDDEN, "게시글에 대한 권한이 없습니다."),
+    NOTICE_POST_ONLY_ADMIN(HttpStatus.FORBIDDEN, "공지사항은 관리자만 작성할 수 있습니다."),
+
+    // 댓글 관련 에러
+    COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "댓글을 찾을 수 없습니다."),
+    COMMENT_FORBIDDEN(HttpStatus.FORBIDDEN, "댓글에 대한 권한이 없습니다.");
 
     private final HttpStatus httpStatus;
     private final String message;
