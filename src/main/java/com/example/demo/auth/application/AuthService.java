@@ -5,13 +5,14 @@ import com.example.demo.auth.infra.RefreshTokenRepository;
 import com.example.demo.auth.presentation.dto.LoginRequest;
 import com.example.demo.auth.presentation.dto.LoginResponse;
 import com.example.demo.auth.presentation.dto.TokenRefreshResponse;
+import com.example.demo.global.exception.CustomException;
+import com.example.demo.global.exception.ErrorCode;
 import com.example.demo.global.security.JwtTokenProvider;
 import com.example.demo.user.domain.User;
 import com.example.demo.user.infra.UserRepository;
 import com.example.demo.user.presentation.dto.UserInfoResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -38,11 +39,11 @@ public class AuthService {
     public LoginResponse login(LoginRequest request) {
         // 사용자 조회
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         // 비밀번호 검증
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new BadCredentialsException("비밀번호가 일치하지 않습니다.");
+            throw new CustomException(ErrorCode.PASSWORD_MISMATCH);
         }
 
         // Access Token 생성
