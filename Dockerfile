@@ -26,4 +26,4 @@ COPY --from=build /app/build/libs/app.jar app.jar
 EXPOSE 8080
 
 # Run application with Railway PORT support
-CMD ["sh", "-c", "java -Dserver.port=${PORT:-8080} -jar app.jar"]
+CMD ["sh", "-c", "java -Dserver.port=${PORT:-8080} -Duser.timezone=Asia/Seoul -jar app.jar"]
