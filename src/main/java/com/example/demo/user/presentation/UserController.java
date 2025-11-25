@@ -1,6 +1,7 @@
 package com.example.demo.user.presentation;
 
 import com.example.demo.user.application.UserService;
+import com.example.demo.user.presentation.dto.ActiveUserCountResponse;
 import com.example.demo.user.presentation.dto.ActiveUserNamesResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +20,15 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
     private final UserService userService;
+
+    /**
+     * 활성 회원 수 조회
+     * @return 활성 회원 수
+     */
+    @GetMapping("/active/count")
+    public ResponseEntity<ActiveUserCountResponse> getActiveUserCount() {
+        return ResponseEntity.ok(userService.getActiveUserCount());
+    }
 
     /**
      * 활성 회원 이름 목록 조회
