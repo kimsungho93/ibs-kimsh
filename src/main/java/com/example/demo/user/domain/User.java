@@ -110,4 +110,11 @@ public class User {
         this.active = true;
     }
 
+    /**
+     * 직급 업데이트
+     */
+    public void updatePosition(Position position) {
+        this.position = position;
+    }
+
 }
