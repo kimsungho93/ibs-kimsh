@@ -16,6 +16,8 @@ public class UserInfoResponse {
     private String email;
     private String name;
     private String role;
+    private String position;
+    private String positionDisplayName;
 
     /**
      * Entity to DTO 변환
@@ -26,6 +28,8 @@ public class UserInfoResponse {
                 .email(user.getEmail())
                 .name(user.getName())
                 .role(user.getRole().name())
+                .position(user.getPosition().name())
+                .positionDisplayName(user.getPosition().getDisplayName())
                 .build();
     }
 }

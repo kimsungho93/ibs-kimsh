@@ -37,6 +37,10 @@ public class User {
     @Column(nullable = false)
     private Role role;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Position position;
+
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -57,6 +61,32 @@ public class User {
      */
     public enum Role {
         USER, ADMIN
+    }
+
+    /**
+     * 직급
+     */
+    public enum Position {
+        TRAINEE("수습사원"),
+        STAFF("사원"),
+        ASSISTANT("주임"),
+        ASSOCIATE("전임"),
+        SENIOR("선임"),
+        LEAD("책임"),
+        PRINCIPAL("수석"),
+        SENIOR_PRINCIPAL("선임수석"),
+        DIRECTOR("이사"),
+        EXECUTIVE("전무");
+
+        private final String displayName;
+
+        Position(String displayName) {
+            this.displayName = displayName;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
     }
 
     /**

@@ -29,22 +29,22 @@ public class DataInitializer implements CommandLineRunner {
      */
     private void createUsersIfNotExists() {
         Object[][] users = {
-                {"정태원", "twjung@ibslab.com", "twjung1234", User.Role.USER},
-                {"최철종", "cjchoi@ibslab.com", "cjchoi1234", User.Role.USER},
-                {"박으뜸", "empark@ibslab.com", "empark1234", User.Role.USER},
-                {"선도우", "douseon@ibslab.com", "douseon1234", User.Role.USER},
-                {"육이슬", "isyuk@ibslab.com", "isyuk1234", User.Role.USER},
-                {"유영진", "yjyou@ibslab.com", "yjyou1234", User.Role.USER},
-                {"이정규", "jglee@ibslab.com", "jglee1234", User.Role.USER},
-                {"허소영", "syheo@ibslab.com", "syheo1234", User.Role.USER},
-                {"김예린", "yrkim@ibslab.com", "yrkim1234", User.Role.USER},
-                {"김성주", "kimsh@ibslab.com", "dlekdud3", User.Role.ADMIN},
-                {"길기호", "ghgil@ibslab.com", "ghgil1234", User.Role.USER},
-                {"이다혜", "leedh@ibslab.com", "leedh1234", User.Role.USER},
-                {"김현진", "kimhj@ibslab.com", "kimhj1234", User.Role.USER},
-                {"문형석", "hsmun@ibslab.com", "hsmun1234", User.Role.USER},
-                {"박찬진", "cjpark@ibslab.com", "cjpark1234", User.Role.USER},
-                {"김성호", "ksh@ibslab.com", "ksh1234", User.Role.USER}
+                {"정태원", "twjung@ibslab.com", "twjung1234", User.Role.USER, User.Position.EXECUTIVE},
+                {"최철종", "cjchoi@ibslab.com", "cjchoi1234", User.Role.USER, User.Position.PRINCIPAL},
+                {"박으뜸", "empark@ibslab.com", "empark1234", User.Role.USER, User.Position.ASSOCIATE},
+                {"선도우", "douseon@ibslab.com", "douseon1234", User.Role.USER, User.Position.ASSOCIATE},
+                {"육이슬", "isyuk@ibslab.com", "isyuk1234", User.Role.USER, User.Position.ASSOCIATE},
+                {"유영진", "yjyou@ibslab.com", "yjyou1234", User.Role.USER, User.Position.ASSOCIATE},
+                {"이정규", "jglee@ibslab.com", "jglee1234", User.Role.USER, User.Position.ASSISTANT},
+                {"허소영", "syheo@ibslab.com", "syheo1234", User.Role.USER, User.Position.ASSISTANT},
+                {"김예린", "yrkim@ibslab.com", "yrkim1234", User.Role.USER, User.Position.ASSISTANT},
+                {"김성주", "kimsh@ibslab.com", "dlekdud3", User.Role.ADMIN, User.Position.ASSISTANT},
+                {"길기호", "ghgil@ibslab.com", "ghgil1234", User.Role.USER, User.Position.ASSISTANT},
+                {"이다혜", "leedh@ibslab.com", "leedh1234", User.Role.USER, User.Position.STAFF},
+                {"김현진", "kimhj@ibslab.com", "kimhj1234", User.Role.USER, User.Position.STAFF},
+                {"문형석", "hsmun@ibslab.com", "hsmun1234", User.Role.USER, User.Position.STAFF},
+                {"박찬진", "cjpark@ibslab.com", "cjpark1234", User.Role.USER, User.Position.STAFF},
+                {"김성호", "ksh@ibslab.com", "ksh1234", User.Role.USER, User.Position.ASSISTANT}
         };
 
         for (Object[] userData : users) {
@@ -52,6 +52,7 @@ public class DataInitializer implements CommandLineRunner {
             String email = (String) userData[1];
             String password = (String) userData[2];
             User.Role role = (User.Role) userData[3];
+            User.Position position = (User.Position) userData[4];
 
             if (!userRepository.existsByEmail(email)) {
                 User user = User.builder()
@@ -59,6 +60,7 @@ public class DataInitializer implements CommandLineRunner {
                         .email(email)
                         .password(passwordEncoder.encode(password))
                         .role(role)
+                        .position(position)
                         .active(true)
                         .build();
 
