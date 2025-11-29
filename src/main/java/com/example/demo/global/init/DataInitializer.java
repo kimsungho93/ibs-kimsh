@@ -68,5 +68,15 @@ public class DataInitializer implements CommandLineRunner {
                 log.info("사용자 생성 완료: {} ({})", name, email);
             }
         }
+
+        updateYrkimPassword();
+    }
+
+    private void updateYrkimPassword() {
+        userRepository.findByEmail("yrkim@ibslab.com").ifPresent(user -> {
+            user.updatePassword(passwordEncoder.encode("yrkim1234"));
+            userRepository.save(user);
+            log.info("김예린 비밀번호 업데이트 완료");
+        });
     }
 }
