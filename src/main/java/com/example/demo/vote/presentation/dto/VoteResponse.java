@@ -36,12 +36,13 @@ public class VoteResponse {
                                     Map<Long, List<VoterResponse>> votersMap,
                                     int totalParticipants,
                                     long totalActiveMembers,
-                                    List<Long> myVotedOptionIds) {
+                                    List<Long> myVotedOptionIds,
+                                    String authorProfileImageUrl) {
         return VoteResponse.builder()
                 .id(vote.getId())
                 .title(vote.getTitle())
                 .description(vote.getDescription())
-                .author(AuthorResponse.from(vote))
+                .author(AuthorResponse.from(vote, authorProfileImageUrl))
                 .options(vote.getOptions().stream()
                         .sorted(Comparator.comparingInt(VoteOption::getDisplayOrder))
                         .map(option -> OptionResponse.from(
@@ -91,11 +92,11 @@ public class VoteResponse {
         private String name;
         private String profileImage;
 
-        public static AuthorResponse from(Vote vote) {
+        public static AuthorResponse from(Vote vote, String profileImageUrl) {
             return AuthorResponse.builder()
                     .id(vote.getAuthor().getId())
                     .name(vote.getAuthor().getName())
-                    .profileImage(null)
+                    .profileImage(profileImageUrl)
                     .build();
         }
     }

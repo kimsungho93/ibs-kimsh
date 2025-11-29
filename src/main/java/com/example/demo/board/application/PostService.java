@@ -7,6 +7,7 @@ import com.example.demo.board.infra.PostRepository;
 import com.example.demo.board.presentation.dto.PostDto;
 import com.example.demo.global.exception.CustomException;
 import com.example.demo.global.exception.ErrorCode;
+import com.example.demo.user.application.UserService;
 import com.example.demo.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -14,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -23,28 +25,38 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final PostLikeRepository postLikeRepository;
+    private final UserService userService;
 
     public Page<PostDto.SummaryResponse> getPosts(Post.Category category, Pageable pageable) {
-        Page<Post> posts;
-        if (category != null) {
-            posts = postRepository.findByCategory(category, pageable);
-        } else {
-            posts = postRepository.findAll(pageable);
-        }
-        return posts.map(PostDto.SummaryResponse::from);
+        Page<Post> posts = (category != null)
+                ? postRepository.findByCategory(category, pageable)
+                : postRepository.findAll(pageable);
+
+        List<Long> authorIds = posts.getContent().stream()
+                .map(post -> post.getAuthor().getId())
+                .distinct()
+                .toList();
+
+        Map<Long, String> profileImageUrlMap = userService.getPresignedProfileImageUrls(authorIds);
+
+        return posts.map(post -> PostDto.SummaryResponse.from(
+                post,
+                profileImageUrlMap.get(post.getAuthor().getId())
+        ));
     }
 
     @Transactional
     public PostDto.Response getPost(Long id, User user) {
         Post post = getPostById(id);
         post.increaseViewCount();
-        
+
         boolean isLiked = false;
         if (user != null) {
             isLiked = postLikeRepository.existsByPostAndUser(post, user);
         }
 
-        return PostDto.Response.from(post, isLiked);
+        String authorProfileImageUrl = userService.getPresignedProfileImageUrl(post.getAuthor());
+        return PostDto.Response.from(post, isLiked, authorProfileImageUrl);
     }
 
     @Transactional
@@ -53,7 +65,9 @@ public class PostService {
 
         Post post = request.toEntity(author);
         postRepository.save(post);
-        return PostDto.Response.from(post, false);
+
+        String authorProfileImageUrl = userService.getPresignedProfileImageUrl(author);
+        return PostDto.Response.from(post, false, authorProfileImageUrl);
     }
 
     @Transactional
@@ -63,9 +77,10 @@ public class PostService {
         validateNoticePermission(request.getCategory(), user);
 
         post.update(request.getTitle(), request.getContent(), request.getCategory());
-        
+
         boolean isLiked = postLikeRepository.existsByPostAndUser(post, user);
-        return PostDto.Response.from(post, isLiked);
+        String authorProfileImageUrl = userService.getPresignedProfileImageUrl(post.getAuthor());
+        return PostDto.Response.from(post, isLiked, authorProfileImageUrl);
     }
 
     @Transactional

@@ -49,13 +49,13 @@ public class PostDto {
         private LocalDateTime createdAt;
         private LocalDateTime updatedAt;
 
-        public static Response from(Post post, boolean isLiked) {
+        public static Response from(Post post, boolean isLiked, String authorProfileImageUrl) {
             return Response.builder()
                     .id(post.getId())
                     .category(post.getCategory())
                     .title(post.getTitle())
                     .content(post.getContent())
-                    .author(AuthorResponse.from(post.getAuthor()))
+                    .author(AuthorResponse.from(post.getAuthor(), authorProfileImageUrl))
                     .viewCount(post.getViewCount())
                     .likeCount(post.getLikeCount())
                     .commentCount(post.getCommentCount())
@@ -78,12 +78,12 @@ public class PostDto {
         private int commentCount;
         private LocalDateTime createdAt;
 
-        public static SummaryResponse from(Post post) {
+        public static SummaryResponse from(Post post, String authorProfileImageUrl) {
             return SummaryResponse.builder()
                     .id(post.getId())
                     .category(post.getCategory())
                     .title(post.getTitle())
-                    .author(AuthorResponse.from(post.getAuthor()))
+                    .author(AuthorResponse.from(post.getAuthor(), authorProfileImageUrl))
                     .viewCount(post.getViewCount())
                     .likeCount(post.getLikeCount())
                     .commentCount(post.getCommentCount())
@@ -97,13 +97,18 @@ public class PostDto {
     public static class AuthorResponse {
         private Long id;
         private String nickname;
-        // avatarUrl if needed
+        private String profileImageUrl;
 
-        public static AuthorResponse from(User user) {
+        public static AuthorResponse from(User user, String profileImageUrl) {
             return AuthorResponse.builder()
                     .id(user.getId())
-                    .nickname(user.getName()) // Assuming name is nickname for now
+                    .nickname(user.getName())
+                    .profileImageUrl(profileImageUrl)
                     .build();
+        }
+
+        public static AuthorResponse from(User user) {
+            return from(user, null);
         }
     }
 }

@@ -28,11 +28,12 @@ public class VoteListResponse {
     public static VoteListResponse from(Vote vote,
                                         int totalParticipants,
                                         long totalActiveMembers,
-                                        boolean hasVoted) {
+                                        boolean hasVoted,
+                                        String authorProfileImageUrl) {
         return VoteListResponse.builder()
                 .id(vote.getId())
                 .title(vote.getTitle())
-                .author(AuthorResponse.from(vote.getAuthor()))
+                .author(AuthorResponse.from(vote.getAuthor(), authorProfileImageUrl))
                 .isAnonymous(vote.isAnonymous())
                 .isMultipleChoice(vote.isMultipleChoice())
                 .totalParticipants(totalParticipants)
@@ -52,11 +53,11 @@ public class VoteListResponse {
         private String name;
         private String profileImage;
 
-        public static AuthorResponse from(User user) {
+        public static AuthorResponse from(User user, String profileImageUrl) {
             return AuthorResponse.builder()
                     .id(user.getId())
                     .name(user.getName())
-                    .profileImage(null)
+                    .profileImage(profileImageUrl)
                     .build();
         }
     }

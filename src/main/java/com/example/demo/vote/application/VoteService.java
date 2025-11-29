@@ -47,6 +47,7 @@ public class VoteService {
 
         Vote savedVote = voteRepository.save(vote);
         long totalActiveMembers = userService.countActiveUsers();
+        String authorProfileImageUrl = userService.getPresignedProfileImageUrl(author);
 
         return VoteResponse.from(
                 savedVote,
@@ -54,7 +55,8 @@ public class VoteService {
                 Collections.emptyMap(),
                 0,
                 totalActiveMembers,
-                Collections.emptyList()
+                Collections.emptyList(),
+                authorProfileImageUrl
         );
     }
 
@@ -88,6 +90,7 @@ public class VoteService {
         int totalParticipants = voteRecordRepository.countDistinctUserByVote(vote);
         long totalActiveMembers = userService.countActiveUsers();
         List<Long> myVotedOptionIds = findMyVotedOptionIds(vote, currentUser);
+        String authorProfileImageUrl = userService.getPresignedProfileImageUrl(vote.getAuthor());
 
         return VoteResponse.from(
                 vote,
@@ -95,7 +98,8 @@ public class VoteService {
                 votersMap,
                 totalParticipants,
                 totalActiveMembers,
-                myVotedOptionIds
+                myVotedOptionIds,
+                authorProfileImageUrl
         );
     }
 
@@ -153,11 +157,18 @@ public class VoteService {
         Set<Long> votedVoteIds = findVotedVoteIds(votes, currentUser);
         long totalActiveMembers = userService.countActiveUsers();
 
+        List<Long> authorIds = votes.stream()
+                .map(vote -> vote.getAuthor().getId())
+                .distinct()
+                .toList();
+        Map<Long, String> profileImageUrlMap = userService.getPresignedProfileImageUrls(authorIds);
+
         return votePage.map(vote -> VoteListResponse.from(
                 vote,
                 participantCountMap.getOrDefault(vote.getId(), 0),
                 totalActiveMembers,
-                votedVoteIds.contains(vote.getId())
+                votedVoteIds.contains(vote.getId()),
+                profileImageUrlMap.get(vote.getAuthor().getId())
         ));
     }
 
