@@ -1,6 +1,7 @@
 package com.example.demo.auth.presentation;
 
 import com.example.demo.auth.application.AuthService;
+import com.example.demo.auth.presentation.dto.ChangePasswordRequest;
 import com.example.demo.auth.presentation.dto.LoginRequest;
 import com.example.demo.auth.presentation.dto.LoginResponse;
 import com.example.demo.user.presentation.dto.UserInfoResponse;
@@ -75,6 +76,18 @@ public class AuthController {
     ) {
         UserInfoResponse userInfo = authService.getCurrentUser(email);
         return ResponseEntity.ok(userInfo);
+    }
+
+    /**
+     * 비밀번호 변경
+     */
+    @PutMapping("/password")
+    public ResponseEntity<Void> changePassword(
+            @AuthenticationPrincipal String email,
+            @Valid @RequestBody ChangePasswordRequest request
+    ) {
+        authService.changePassword(email, request);
+        return ResponseEntity.noContent().build();
     }
 
     /**

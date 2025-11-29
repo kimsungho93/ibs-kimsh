@@ -2,6 +2,7 @@ package com.example.demo.auth.application;
 
 import com.example.demo.auth.domain.RefreshToken;
 import com.example.demo.auth.infra.RefreshTokenRepository;
+import com.example.demo.auth.presentation.dto.ChangePasswordRequest;
 import com.example.demo.auth.presentation.dto.LoginRequest;
 import com.example.demo.auth.presentation.dto.LoginResponse;
 import com.example.demo.auth.presentation.dto.TokenRefreshResponse;
@@ -130,6 +131,33 @@ public class AuthService {
                 .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다."));
 
         return UserInfoResponse.from(user);
+    }
+
+    /**
+     * 비밀번호 변경
+     */
+    @Transactional
+    public void changePassword(String email, ChangePasswordRequest request) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        validateCurrentPassword(request.getCurrentPassword(), user.getPassword());
+        validatePasswordConfirmation(request);
+
+        String encodedPassword = passwordEncoder.encode(request.getNewPassword());
+        user.updatePassword(encodedPassword);
+    }
+
+    private void validateCurrentPassword(String rawPassword, String encodedPassword) {
+        if (!passwordEncoder.matches(rawPassword, encodedPassword)) {
+            throw new CustomException(ErrorCode.CURRENT_PASSWORD_MISMATCH);
+        }
+    }
+
+    private void validatePasswordConfirmation(ChangePasswordRequest request) {
+        if (!request.getNewPassword().equals(request.getConfirmPassword())) {
+            throw new CustomException(ErrorCode.PASSWORD_CONFIRM_MISMATCH);
+        }
     }
 
     /**
