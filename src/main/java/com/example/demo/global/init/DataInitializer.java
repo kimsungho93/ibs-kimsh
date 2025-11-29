@@ -54,26 +54,19 @@ public class DataInitializer implements CommandLineRunner {
             User.Role role = (User.Role) userData[3];
             User.Position position = (User.Position) userData[4];
 
-            userRepository.findByEmail(email).ifPresentOrElse(
-                    existingUser -> {
-                        existingUser.updatePosition(position);
-                        userRepository.save(existingUser);
-                        log.info("사용자 직급 업데이트: {} ({}) -> {}", name, email, position.getDisplayName());
-                    },
-                    () -> {
-                        User user = User.builder()
-                                .name(name)
-                                .email(email)
-                                .password(passwordEncoder.encode(password))
-                                .role(role)
-                                .position(position)
-                                .active(true)
-                                .build();
+            if (userRepository.findByEmail(email).isEmpty()) {
+                User user = User.builder()
+                        .name(name)
+                        .email(email)
+                        .password(passwordEncoder.encode(password))
+                        .role(role)
+                        .position(position)
+                        .active(true)
+                        .build();
 
-                        userRepository.save(user);
-                        log.info("사용자 생성 완료: {} ({})", name, email);
-                    }
-            );
+                userRepository.save(user);
+                log.info("사용자 생성 완료: {} ({})", name, email);
+            }
         }
     }
 }
