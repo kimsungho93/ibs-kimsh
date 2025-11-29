@@ -15,8 +15,6 @@ public enum ErrorCode {
     FILE_SIZE_EXCEEDED(HttpStatus.BAD_REQUEST, "파일 크기가 10MB를 초과했습니다."),
     INVALID_FILE_EXTENSION(HttpStatus.BAD_REQUEST, "허용되지 않는 파일 확장자입니다."),
     FILE_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "파일 업로드에 실패했습니다."),
-    ASYNC_FILE_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "비동기 파일 업로드에 실패했습니다."),
-    ATTACHMENT_UPDATE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "첨부파일 업데이트에 실패했습니다."),
     FILE_NOT_FOUND(HttpStatus.NOT_FOUND, "파일을 찾을 수 없습니다."),
     FILE_DOWNLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "파일 다운로드에 실패했습니다."),
 
@@ -47,7 +45,12 @@ public enum ErrorCode {
     VOTE_CLOSED(HttpStatus.BAD_REQUEST, "종료된 투표입니다."),
     VOTE_EXPIRED(HttpStatus.BAD_REQUEST, "마감된 투표입니다."),
     VOTE_SINGLE_CHOICE_ONLY(HttpStatus.BAD_REQUEST, "단일 선택 투표입니다."),
-    VOTE_OPTION_NOT_FOUND(HttpStatus.NOT_FOUND, "선택지를 찾을 수 없습니다.");
+    VOTE_OPTION_NOT_FOUND(HttpStatus.NOT_FOUND, "선택지를 찾을 수 없습니다."),
+    VOTE_OPTION_MIN_COUNT(HttpStatus.BAD_REQUEST, "최소 2개의 선택지가 필요합니다."),
+    VOTE_OPTION_MAX_COUNT(HttpStatus.BAD_REQUEST, "선택지는 최대 10개까지 가능합니다."),
+    VOTE_OPTION_DUPLICATE(HttpStatus.BAD_REQUEST, "중복된 선택지가 있습니다."),
+    VOTE_OPTION_HAS_VOTES(HttpStatus.BAD_REQUEST, "이미 투표가 진행된 선택지는 삭제할 수 없습니다."),
+    VOTE_ADD_OPTION_NOT_ALLOWED(HttpStatus.FORBIDDEN, "이 투표는 선택지 추가가 허용되지 않습니다.");
 
     private final HttpStatus httpStatus;
     private final String message;

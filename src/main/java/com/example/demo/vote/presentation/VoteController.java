@@ -4,6 +4,7 @@ import com.example.demo.user.application.UserService;
 import com.example.demo.user.domain.User;
 import com.example.demo.vote.application.VoteService;
 import com.example.demo.vote.domain.VoteStatus;
+import com.example.demo.vote.presentation.dto.AddVoteOptionRequest;
 import com.example.demo.vote.presentation.dto.CastVoteRequest;
 import com.example.demo.vote.presentation.dto.CreateVoteRequest;
 import com.example.demo.vote.presentation.dto.UpdateVoteRequest;
@@ -109,5 +110,17 @@ public class VoteController {
         User user = userService.findByEmail(email);
         VoteResponse response = voteService.closeVote(id, user);
         return ResponseEntity.ok(Map.of("success", true, "data", response));
+    }
+
+    @PostMapping("/{voteId}/options")
+    public ResponseEntity<Map<String, Object>> addOption(
+            @PathVariable Long voteId,
+            @Valid @RequestBody AddVoteOptionRequest request,
+            @AuthenticationPrincipal String email
+    ) {
+        User user = userService.findByEmail(email);
+        VoteResponse.OptionResponse response = voteService.addOption(voteId, request.getText(), user);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(Map.of("success", true, "data", response));
     }
 }

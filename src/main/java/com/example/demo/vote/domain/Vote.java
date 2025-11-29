@@ -41,6 +41,10 @@ public class Vote {
     @Column(name = "is_multiple_choice", nullable = false)
     private boolean multipleChoice;
 
+    @Column(name = "allow_add_option", nullable = false)
+    @Builder.Default
+    private boolean allowAddOption = false;
+
     @Column(nullable = false)
     private LocalDateTime endDate;
 
@@ -67,6 +71,14 @@ public class Vote {
 
     public boolean isExpired() {
         return LocalDateTime.now().isAfter(endDate);
+    }
+
+    public boolean isClosed() {
+        return this.status == VoteStatus.CLOSED;
+    }
+
+    public boolean isActive() {
+        return !isClosed() && !isExpired();
     }
 
     public void close() {

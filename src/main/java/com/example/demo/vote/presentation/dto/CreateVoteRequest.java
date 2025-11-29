@@ -28,6 +28,12 @@ public class CreateVoteRequest {
     @NotNull(message = "복수 선택 여부는 필수입니다.")
     private Boolean isMultipleChoice;
 
+    private Boolean allowAddOption;
+
     @NotNull(message = "종료일은 필수입니다.")
     private LocalDateTime endDate;
+
+    public Boolean getAllowAddOption() {
+        return allowAddOption != null ? allowAddOption : false;
+    }
 }

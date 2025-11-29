@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -21,6 +22,7 @@ public class VoteResponse {
     private List<OptionResponse> options;
     private boolean isAnonymous;
     private boolean isMultipleChoice;
+    private boolean allowAddOption;
     private int totalParticipants;
     private long totalActiveMembers;
     private LocalDateTime endDate;
@@ -41,6 +43,7 @@ public class VoteResponse {
                 .description(vote.getDescription())
                 .author(AuthorResponse.from(vote))
                 .options(vote.getOptions().stream()
+                        .sorted(Comparator.comparingInt(VoteOption::getDisplayOrder))
                         .map(option -> OptionResponse.from(
                                 option,
                                 voteCountMap.getOrDefault(option.getId(), 0L),
@@ -48,6 +51,7 @@ public class VoteResponse {
                         .toList())
                 .isAnonymous(vote.isAnonymous())
                 .isMultipleChoice(vote.isMultipleChoice())
+                .allowAddOption(vote.isAllowAddOption())
                 .totalParticipants(totalParticipants)
                 .totalActiveMembers(totalActiveMembers)
                 .endDate(vote.getEndDate())
@@ -63,15 +67,19 @@ public class VoteResponse {
     public static class OptionResponse {
         private Long id;
         private String text;
+        private int displayOrder;
         private long voteCount;
         private List<VoterResponse> voters;
+        private Long addedByUserId;
 
         public static OptionResponse from(VoteOption option, long voteCount, List<VoterResponse> voters) {
             return OptionResponse.builder()
                     .id(option.getId())
                     .text(option.getText())
+                    .displayOrder(option.getDisplayOrder())
                     .voteCount(voteCount)
                     .voters(voters)
+                    .addedByUserId(option.getAddedByUserId())
                     .build();
         }
     }

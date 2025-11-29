@@ -13,6 +13,7 @@ import com.example.demo.vote.infra.VoteRepository;
 import com.example.demo.vote.domain.VoteStatus;
 import com.example.demo.user.domain.User.Role;
 import com.example.demo.vote.presentation.dto.CreateVoteRequest;
+import com.example.demo.vote.presentation.dto.UpdateVoteOptionRequest;
 import com.example.demo.vote.presentation.dto.UpdateVoteRequest;
 import com.example.demo.vote.presentation.dto.VoteListResponse;
 import com.example.demo.vote.presentation.dto.VoteResponse;
@@ -30,6 +31,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class VoteService {
+
+    private static final int MIN_OPTION_COUNT = 2;
+    private static final int MAX_OPTION_COUNT = 10;
 
     private final VoteRepository voteRepository;
     private final VoteOptionRepository voteOptionRepository;
@@ -61,6 +65,7 @@ public class VoteService {
                 .author(author)
                 .anonymous(request.getIsAnonymous())
                 .multipleChoice(request.getIsMultipleChoice())
+                .allowAddOption(request.getAllowAddOption())
                 .endDate(request.getEndDate())
                 .build();
     }
@@ -193,7 +198,7 @@ public class VoteService {
     }
 
     private void validateVoteIsActive(Vote vote) {
-        if (vote.getStatus() == VoteStatus.CLOSED) {
+        if (vote.isClosed()) {
             throw new CustomException(ErrorCode.VOTE_CLOSED);
         }
         if (vote.isExpired()) {
@@ -231,10 +236,103 @@ public class VoteService {
         Vote vote = findVoteOrThrow(voteId);
 
         validateAuthorOrAdmin(vote, currentUser);
+        validateVoteNotClosed(vote);
 
         vote.update(request.getTitle(), request.getDescription(), request.getEndDate());
 
+        if (request.getOptions() != null) {
+            updateVoteOptions(vote, request.getOptions(), request.getDeletedOptionIds());
+        }
+
         return getVote(voteId, currentUser);
+    }
+
+    private void validateVoteNotClosed(Vote vote) {
+        if (vote.isClosed()) {
+            throw new CustomException(ErrorCode.VOTE_CLOSED);
+        }
+    }
+
+    private void updateVoteOptions(Vote vote,
+                                   List<UpdateVoteOptionRequest> optionRequests,
+                                   List<Long> deletedOptionIds) {
+        deleteOptions(vote, deletedOptionIds);
+        applyOptionUpdates(vote, optionRequests);
+        validateOptionCount(vote.getOptions().size());
+        validateNoDuplicateOptions(optionRequests);
+    }
+
+    private void deleteOptions(Vote vote, List<Long> deletedOptionIds) {
+        if (deletedOptionIds == null || deletedOptionIds.isEmpty()) {
+            return;
+        }
+
+        List<VoteOption> optionsToDelete = vote.getOptions().stream()
+                .filter(option -> deletedOptionIds.contains(option.getId()))
+                .toList();
+
+        validateNoVotesOnOptions(optionsToDelete);
+
+        vote.getOptions().removeAll(optionsToDelete);
+        voteOptionRepository.deleteAllById(deletedOptionIds);
+    }
+
+    private void validateNoVotesOnOptions(List<VoteOption> options) {
+        boolean hasVotes = options.stream()
+                .anyMatch(voteRecordRepository::existsByOption);
+
+        if (hasVotes) {
+            throw new CustomException(ErrorCode.VOTE_OPTION_HAS_VOTES);
+        }
+    }
+
+    private void applyOptionUpdates(Vote vote, List<UpdateVoteOptionRequest> optionRequests) {
+        Map<Long, VoteOption> existingOptions = vote.getOptions().stream()
+                .collect(Collectors.toMap(VoteOption::getId, option -> option));
+
+        for (UpdateVoteOptionRequest request : optionRequests) {
+            if (request.getId() != null) {
+                updateExistingOption(existingOptions, request);
+            } else {
+                addNewOption(vote, request);
+            }
+        }
+    }
+
+    private void updateExistingOption(Map<Long, VoteOption> existingOptions,
+                                      UpdateVoteOptionRequest request) {
+        VoteOption option = existingOptions.get(request.getId());
+        if (option == null) {
+            throw new CustomException(ErrorCode.VOTE_OPTION_NOT_FOUND);
+        }
+        option.update(request.getText(), request.getDisplayOrder());
+    }
+
+    private void addNewOption(Vote vote, UpdateVoteOptionRequest request) {
+        VoteOption newOption = VoteOption.builder()
+                .text(request.getText())
+                .displayOrder(request.getDisplayOrder())
+                .build();
+        vote.addOption(newOption);
+    }
+
+    private void validateOptionCount(int optionCount) {
+        if (optionCount < MIN_OPTION_COUNT) {
+            throw new CustomException(ErrorCode.VOTE_OPTION_MIN_COUNT);
+        }
+        if (optionCount > MAX_OPTION_COUNT) {
+            throw new CustomException(ErrorCode.VOTE_OPTION_MAX_COUNT);
+        }
+    }
+
+    private void validateNoDuplicateOptions(List<UpdateVoteOptionRequest> optionRequests) {
+        Set<String> uniqueTexts = optionRequests.stream()
+                .map(request -> request.getText().trim().toLowerCase())
+                .collect(Collectors.toSet());
+
+        if (uniqueTexts.size() != optionRequests.size()) {
+            throw new CustomException(ErrorCode.VOTE_OPTION_DUPLICATE);
+        }
     }
 
     @Transactional
@@ -265,5 +363,49 @@ public class VoteService {
         if (!isAuthor && !isAdmin) {
             throw new CustomException(ErrorCode.FORBIDDEN);
         }
+    }
+
+    @Transactional
+    public VoteResponse.OptionResponse addOption(Long voteId, String text, User currentUser) {
+        Vote vote = findVoteOrThrow(voteId);
+
+        validateCanAddOption(vote);
+        validateNoDuplicateOptionText(vote, text);
+        validateOptionCount(vote.getOptions().size() + 1);
+
+        int nextDisplayOrder = getNextDisplayOrder(vote);
+        VoteOption newOption = VoteOption.builder()
+                .text(text.trim())
+                .displayOrder(nextDisplayOrder)
+                .addedByUserId(currentUser.getId())
+                .build();
+        vote.addOption(newOption);
+
+        voteRepository.flush();
+
+        return VoteResponse.OptionResponse.from(newOption, 0, List.of());
+    }
+
+    private void validateCanAddOption(Vote vote) {
+        if (!vote.isAllowAddOption()) {
+            throw new CustomException(ErrorCode.VOTE_ADD_OPTION_NOT_ALLOWED);
+        }
+        validateVoteIsActive(vote);
+    }
+
+    private void validateNoDuplicateOptionText(Vote vote, String text) {
+        boolean exists = vote.getOptions().stream()
+                .anyMatch(option -> option.getText().trim().equalsIgnoreCase(text.trim()));
+
+        if (exists) {
+            throw new CustomException(ErrorCode.VOTE_OPTION_DUPLICATE);
+        }
+    }
+
+    private int getNextDisplayOrder(Vote vote) {
+        return vote.getOptions().stream()
+                .mapToInt(VoteOption::getDisplayOrder)
+                .max()
+                .orElse(-1) + 1;
     }
 }

@@ -41,4 +41,10 @@ public interface VoteRecordRepository extends JpaRepository<VoteRecord, Long> {
     @Modifying
     @Query("DELETE FROM VoteRecord vr WHERE vr.vote = :vote")
     void deleteByVote(@Param("vote") Vote vote);
+
+    @Modifying
+    @Query("DELETE FROM VoteRecord vr WHERE vr.option IN :options")
+    void deleteByOptionIn(@Param("options") List<VoteOption> options);
+
+    boolean existsByOption(VoteOption option);
 }

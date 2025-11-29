@@ -28,7 +28,15 @@ public class VoteOption {
     @Builder.Default
     private int displayOrder = 0;
 
+    @Column(name = "added_by_user_id")
+    private Long addedByUserId;
+
     void setVote(Vote vote) {
         this.vote = vote;
+    }
+
+    public void update(String text, int displayOrder) {
+        this.text = text;
+        this.displayOrder = displayOrder;
     }
 }
