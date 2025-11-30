@@ -90,6 +90,7 @@ public class User {
         public String getDisplayName() {
             return displayName;
         }
+
     }
 
     /**
