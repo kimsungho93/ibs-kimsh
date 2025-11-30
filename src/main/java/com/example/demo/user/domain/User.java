@@ -56,6 +56,9 @@ public class User {
     @Convert(converter = BooleanToYNConverter.class)
     private boolean active = true;
 
+    @Column(length = 500)
+    private String profileImageUrl;
+
     /**
      * 사용자 역할
      */
@@ -115,6 +118,13 @@ public class User {
      */
     public void updatePosition(Position position) {
         this.position = position;
+    }
+
+    /**
+     * 프로필 이미지 URL 업데이트
+     */
+    public void updateProfileImageUrl(String profileImageUrl) {
+        this.profileImageUrl = profileImageUrl;
     }
 
 }

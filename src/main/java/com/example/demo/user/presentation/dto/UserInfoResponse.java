@@ -18,6 +18,7 @@ public class UserInfoResponse {
     private String role;
     private String position;
     private String positionDisplayName;
+    private String profileImageUrl;
 
     /**
      * Entity to DTO 변환
@@ -30,6 +31,7 @@ public class UserInfoResponse {
                 .role(user.getRole().name())
                 .position(user.getPosition().name())
                 .positionDisplayName(user.getPosition().getDisplayName())
+                .profileImageUrl(user.getProfileImageUrl())
                 .build();
     }
 }

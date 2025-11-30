@@ -28,6 +28,14 @@ public enum ErrorCode {
     PASSWORD_CONFIRM_MISMATCH(HttpStatus.BAD_REQUEST, "새 비밀번호와 비밀번호 확인이 일치하지 않습니다."),
     CURRENT_PASSWORD_MISMATCH(HttpStatus.BAD_REQUEST, "현재 비밀번호가 일치하지 않습니다."),
 
+    // 프로필 이미지 관련 에러
+    PROFILE_IMAGE_REQUIRED(HttpStatus.BAD_REQUEST, "프로필 이미지 파일이 필요합니다."),
+    PROFILE_IMAGE_SIZE_EXCEEDED(HttpStatus.BAD_REQUEST, "프로필 이미지 크기가 5MB를 초과했습니다."),
+    PROFILE_IMAGE_INVALID_FORMAT(HttpStatus.BAD_REQUEST, "지원하지 않는 파일 형식입니다. JPG, PNG, WebP만 업로드 가능합니다."),
+    PROFILE_IMAGE_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "프로필 이미지 업로드에 실패했습니다."),
+    PROFILE_IMAGE_DELETE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "기존 프로필 이미지 삭제에 실패했습니다."),
+    PROFILE_IMAGE_NOT_FOUND(HttpStatus.NOT_FOUND, "프로필 이미지가 설정되지 않았습니다."),
+
     // 채팅방 관련 에러
     CHAT_ROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "채팅방을 찾을 수 없습니다."),
     CHAT_ROOM_FULL(HttpStatus.BAD_REQUEST, "채팅방이 가득 찼습니다."),

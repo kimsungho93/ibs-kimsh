@@ -27,5 +27,6 @@ public class LoginResponse {
         private String role;
         private String position;
         private String positionDisplayName;
+        private String profileImageUrl;
     }
 }

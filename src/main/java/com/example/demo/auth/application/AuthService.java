@@ -67,6 +67,7 @@ public class AuthService {
                         .role(user.getRole().name())
                         .position(user.getPosition().name())
                         .positionDisplayName(user.getPosition().getDisplayName())
+                        .profileImageUrl(user.getProfileImageUrl())
                         .build())
                 .build();
     }

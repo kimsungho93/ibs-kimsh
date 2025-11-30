@@ -8,6 +8,7 @@ import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 
 import java.net.URI;
 
@@ -40,14 +41,27 @@ public class R2Config {
      */
     @Bean
     public S3Client s3Client() {
-        // AWS 자격 증명 생성
         AwsBasicCredentials credentials = AwsBasicCredentials.create(accessKeyId, secretAccessKey);
 
-        // S3 클라이언트 빌드 (R2 엔드포인트 사용)
         return S3Client.builder()
                 .endpointOverride(URI.create(endpoint))
                 .credentialsProvider(StaticCredentialsProvider.create(credentials))
-                .region(Region.US_EAST_1) // R2는 리전이 없지만 SDK 요구사항으로 임의 설정
+                .region(Region.US_EAST_1)
+                .build();
+    }
+
+    /**
+     * R2용 S3 Presigner 생성
+     * @return S3Presigner Presigned URL 생성을 위한 Presigner
+     */
+    @Bean
+    public S3Presigner s3Presigner() {
+        AwsBasicCredentials credentials = AwsBasicCredentials.create(accessKeyId, secretAccessKey);
+
+        return S3Presigner.builder()
+                .endpointOverride(URI.create(endpoint))
+                .credentialsProvider(StaticCredentialsProvider.create(credentials))
+                .region(Region.US_EAST_1)
                 .build();
     }
 }
